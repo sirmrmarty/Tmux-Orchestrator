@@ -67,15 +67,32 @@ class TmuxOrchestrator:
     
     def capture_window_content(self, session_name: str, window_index: int, num_lines: int = 50) -> str:
         """Safely capture the last N lines from a tmux window"""
+        # Validate inputs
+        if not session_name or not isinstance(window_index, int) or window_index < 0:
+            return f"Error: Invalid session name or window index: {session_name}:{window_index}"
+            
+        if num_lines <= 0:
+            return "Error: Number of lines must be positive"
+            
         if num_lines > self.max_lines_capture:
             num_lines = self.max_lines_capture
+            print(f"Warning: Limiting capture to {self.max_lines_capture} lines")
             
+        target = f"{session_name}:{window_index}"
         try:
-            cmd = ["tmux", "capture-pane", "-t", f"{session_name}:{window_index}", "-p", "-S", f"-{num_lines}"]
+            # First check if target exists
+            check_cmd = ["tmux", "list-panes", "-t", target]
+            subprocess.run(check_cmd, capture_output=True, check=True)
+            
+            # Capture the content
+            cmd = ["tmux", "capture-pane", "-t", target, "-p", "-S", f"-{num_lines}"]
             result = subprocess.run(cmd, capture_output=True, text=True, check=True)
             return result.stdout
         except subprocess.CalledProcessError as e:
-            return f"Error capturing window content: {e}"
+            error_msg = f"Error capturing content from {target}: {e}"
+            if e.stderr:
+                error_msg += f"\nDetails: {e.stderr}"
+            return error_msg
     
     def get_window_info(self, session_name: str, window_index: int) -> Dict:
         """Get detailed information about a specific window"""
@@ -98,33 +115,62 @@ class TmuxOrchestrator:
     
     def send_keys_to_window(self, session_name: str, window_index: int, keys: str, confirm: bool = True) -> bool:
         """Safely send keys to a tmux window with confirmation"""
+        # Validate inputs
+        if not session_name or not isinstance(window_index, int) or window_index < 0:
+            print(f"Error: Invalid session name or window index: {session_name}:{window_index}")
+            return False
+            
+        if not keys:
+            print("Error: Cannot send empty keys")
+            return False
+            
+        # Check if target exists
+        target = f"{session_name}:{window_index}"
+        check_cmd = ["tmux", "list-panes", "-t", target]
+        try:
+            subprocess.run(check_cmd, capture_output=True, check=True)
+        except subprocess.CalledProcessError:
+            print(f"Error: Tmux target '{target}' does not exist")
+            return False
+            
         if self.safety_mode and confirm:
-            print(f"SAFETY CHECK: About to send '{keys}' to {session_name}:{window_index}")
+            print(f"SAFETY CHECK: About to send '{keys}' to {target}")
             response = input("Confirm? (yes/no): ")
             if response.lower() != 'yes':
                 print("Operation cancelled")
                 return False
         
         try:
-            cmd = ["tmux", "send-keys", "-t", f"{session_name}:{window_index}", keys]
-            subprocess.run(cmd, check=True)
+            cmd = ["tmux", "send-keys", "-t", target, keys]
+            result = subprocess.run(cmd, capture_output=True, text=True, check=True)
             return True
         except subprocess.CalledProcessError as e:
-            print(f"Error sending keys: {e}")
+            print(f"Error sending keys to {target}: {e}")
+            if e.stderr:
+                print(f"Details: {e.stderr}")
             return False
     
     def send_command_to_window(self, session_name: str, window_index: int, command: str, confirm: bool = True) -> bool:
         """Send a command to a window (adds Enter automatically)"""
+        # Validate command
+        if not command:
+            print("Error: Cannot send empty command")
+            return False
+            
         # First send the command text
         if not self.send_keys_to_window(session_name, window_index, command, confirm):
             return False
+            
         # Then send the actual Enter key (C-m)
+        target = f"{session_name}:{window_index}"
         try:
-            cmd = ["tmux", "send-keys", "-t", f"{session_name}:{window_index}", "C-m"]
-            subprocess.run(cmd, check=True)
+            cmd = ["tmux", "send-keys", "-t", target, "C-m"]
+            result = subprocess.run(cmd, capture_output=True, text=True, check=True)
             return True
         except subprocess.CalledProcessError as e:
-            print(f"Error sending Enter key: {e}")
+            print(f"Error sending Enter key to {target}: {e}")
+            if e.stderr:
+                print(f"Details: {e.stderr}")
             return False
     
     def get_all_windows_status(self) -> Dict:
@@ -199,6 +245,17 @@ class TmuxOrchestrator:
         return snapshot
 
 if __name__ == "__main__":
-    orchestrator = TmuxOrchestrator()
-    status = orchestrator.get_all_windows_status()
-    print(json.dumps(status, indent=2))
+    try:
+        # Check if tmux is available
+        subprocess.run(["tmux", "-V"], capture_output=True, check=True)
+        
+        orchestrator = TmuxOrchestrator()
+        status = orchestrator.get_all_windows_status()
+        print(json.dumps(status, indent=2))
+    except subprocess.CalledProcessError:
+        print("Error: tmux is not installed or not accessible")
+        print("Please install tmux to use this utility")
+        exit(1)
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+        exit(1)

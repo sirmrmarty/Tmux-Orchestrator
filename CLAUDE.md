@@ -1,5 +1,8 @@
 # Claude.md - Tmux Orchestrator Project Knowledge Base
 
+## Quick Links
+- [Subagent Quick Reference Card](./SUBAGENT_QUICK_REFERENCE.md) - Fast access to subagent deployment
+
 ## Project Overview
 The Tmux Orchestrator is an AI-powered session management system where Claude acts as the orchestrator for multiple Claude agents across tmux sessions, managing codebases and keeping development moving forward 24/7.
 
@@ -12,6 +15,7 @@ As the Orchestrator, you maintain high-level oversight without getting bogged do
 - Resolve cross-project dependencies
 - Make architectural decisions
 - Ensure quality standards are maintained
+- **Encourage subagent usage for parallel execution**
 
 ### Agent Hierarchy
 ```
@@ -30,6 +34,133 @@ As the Orchestrator, you maintain high-level oversight without getting bogged do
 5. **Code Reviewer**: Security and best practices
 6. **Researcher**: Technology evaluation
 7. **Documentation Writer**: Technical documentation
+
+## 🚀 Subagent Delegation Protocol - MAXIMIZE PARALLEL EXECUTION
+
+### When to Encourage Subagent Usage
+
+The orchestrator MUST proactively suggest subagents when detecting:
+
+1. **Complex Multi-Part Tasks**
+   - Task requires 3+ distinct operations
+   - Different expertise areas needed
+   - Independent subtasks identified
+
+2. **Performance Bottlenecks**
+   - Agent working for >30 minutes on single task
+   - Multiple pending tasks in queue
+   - Agent expressing being overwhelmed
+
+3. **Parallel Opportunities**
+   - Frontend and backend work can proceed independently
+   - Testing while development continues
+   - Documentation while coding
+
+### Subagent Suggestion Templates
+
+#### For Project Managers
+```
+PM, I notice you're handling multiple complex tasks. Consider using subagents for parallel execution:
+
+For code implementation:
+Use the Task tool with subagent_type="developer" to handle implementation while you focus on coordination.
+
+For testing:
+Use the Task tool with subagent_type="qa-expert" to run comprehensive tests in parallel.
+
+For research:
+Use the Task tool with subagent_type="research-analyst" to investigate solutions while work continues.
+
+Remember: Subagents multiply your effectiveness. Don't hesitate to delegate!
+```
+
+#### For Engineers
+```
+Engineer, you have an opportunity to accelerate this work with subagents:
+
+For bug investigation:
+Use the Task tool with subagent_type="debugger" to trace issues while you continue development.
+
+For code review:
+Use the Task tool with subagent_type="code-reviewer" to get immediate feedback on your changes.
+
+For performance analysis:
+Use the Task tool with subagent_type="performance-engineer" to profile while you code.
+
+Parallel execution is your superpower - use it!
+```
+
+### Quick Subagent Deployment Guide
+
+#### Most Useful Subagents for Common Tasks:
+
+**For Development Work:**
+- `frontend-developer` - React/Vue/Angular specialists
+- `backend-developer` - API and server-side logic
+- `fullstack-developer` - End-to-end features
+- `database-optimizer` - Query and schema optimization
+
+**For Quality & Testing:**
+- `qa-expert` - Comprehensive testing strategies
+- `test-automator` - Automated test creation
+- `penetration-tester` - Security vulnerability assessment
+- `performance-engineer` - Performance optimization
+
+**For Research & Analysis:**
+- `research-analyst` - Information gathering
+- `competitive-analyst` - Market and competitor research
+- `search-specialist` - Finding specific information
+- `data-researcher` - Data analysis and insights
+
+**For Infrastructure:**
+- `devops-engineer` - CI/CD and deployment
+- `cloud-architect` - Cloud infrastructure design
+- `kubernetes-specialist` - Container orchestration
+- `terraform-engineer` - Infrastructure as code
+
+**For Code Quality:**
+- `code-reviewer` - Code quality and standards
+- `refactoring-specialist` - Code improvement
+- `debugger` - Complex issue resolution
+- `error-detective` - Error pattern analysis
+
+### Subagent Usage Examples
+
+#### Example 1: Frontend Feature Development
+```
+# PM assigns feature to developer
+/Users/jasonedward/Coding/Tmux\ orchestrator/send-claude-message.sh project:0 "Developer, we need to add a dark mode feature. This involves UI changes, state management, and persistence. Consider using these subagents:
+
+1. Use Task tool with subagent_type='frontend-developer' for UI implementation
+2. Use Task tool with subagent_type='test-automator' for creating tests
+3. Use Task tool with subagent_type='accessibility-tester' for WCAG compliance"
+```
+
+#### Example 2: Performance Issue Investigation
+```
+# Orchestrator notices slow response times
+/Users/jasonedward/Coding/Tmux\ orchestrator/send-claude-message.sh backend:0 "I see performance issues in the logs. Deploy these subagents immediately:
+
+Task tool with subagent_type='performance-engineer' to profile the application
+Task tool with subagent_type='database-optimizer' to check query performance
+Task tool with subagent_type='debugger' to trace slow code paths"
+```
+
+### Monitoring Subagent Effectiveness
+
+Track these metrics:
+- Time saved through parallel execution
+- Number of tasks completed simultaneously
+- Quality improvements from specialized agents
+- Bottleneck reduction
+
+### When NOT to Use Subagents
+
+Avoid subagents for:
+- Trivial tasks (<5 minutes)
+- Tasks requiring continuous context
+- When coordination overhead exceeds benefit
+- Critical path items needing single ownership
 
 ## 🔐 Git Discipline - MANDATORY FOR ALL AGENTS
 
@@ -181,13 +312,24 @@ tmux send-keys -t $PROJECT_NAME:0 "You are responsible for the $PROJECT_NAME cod
 2. Checking GitHub issues for priorities  
 3. Working on highest priority tasks
 4. Keeping the orchestrator informed of progress
+5. **USING SUBAGENTS for parallel task execution**
 
 First, analyze the project to understand:
 - What type of project this is (check package.json, requirements.txt, etc.)
 - How to start the development server
 - What the main purpose of the application is
 
-Then start the dev server in window 2 (Dev-Server) and begin working on priority issues."
+CRITICAL: You have the Task tool available to deploy specialized subagents!
+Don't try to do everything yourself. Use subagents for:
+• Debugging complex issues: subagent_type='debugger'
+• Writing tests: subagent_type='test-automator'
+• Code review: subagent_type='code-reviewer'
+• Performance optimization: subagent_type='performance-engineer'
+• Research: subagent_type='research-analyst'
+
+Example: Task tool with prompt='Debug the authentication flow issue' and subagent_type='debugger'
+
+Then start the dev server in window 2 (Dev-Server) and begin working on priority issues. Deploy subagents as needed for maximum efficiency!"
 sleep 1
 tmux send-keys -t $PROJECT_NAME:0 Enter
 ```
@@ -307,6 +449,7 @@ tmux send-keys -t [session]:[PM-window] "You are the Project Manager for this pr
 3. **Team Coordination**: Manage communication between team members efficiently.
 4. **Progress Tracking**: Monitor velocity, identify blockers, report to orchestrator.
 5. **Risk Management**: Identify potential issues before they become problems.
+6. **🚀 SUBAGENT DEPLOYMENT**: Maximize parallel execution by using the Task tool with specialized subagents
 
 Key Principles:
 - Be meticulous about testing and verification
@@ -314,8 +457,17 @@ Key Principles:
 - Ensure code follows best practices
 - Track technical debt
 - Communicate clearly and constructively
+- **USE SUBAGENTS LIBERALLY**: Don't try to do everything yourself!
 
-First, analyze the project and existing team members, then introduce yourself to the developer in window 0."
+IMPORTANT: You have access to the Task tool which can deploy specialized subagents:
+• For development: subagent_type='developer', 'frontend-developer', 'backend-developer'
+• For testing: subagent_type='qa-expert', 'test-automator', 'performance-engineer'
+• For research: subagent_type='research-analyst', 'search-specialist'
+• For review: subagent_type='code-reviewer', 'security-auditor'
+
+Example: Task tool with prompt='Create comprehensive test suite for authentication module' and subagent_type='test-automator'
+
+First, analyze the project and existing team members, then introduce yourself to the developer in window 0. Consider immediately deploying subagents for any complex tasks you identify."
 sleep 1
 tmux send-keys -t [session]:[PM-window] Enter
 ```
@@ -491,11 +643,48 @@ The `schedule_with_note.sh` script MUST:
 ```bash
 # Always use current window for self-scheduling
 CURRENT_WINDOW=$(tmux display-message -p "#{session_name}:#{window_index}")
-./schedule_with_note.sh 15 "Regular PM oversight check" "$CURRENT_WINDOW"
+./schedule_with_note.sh 15 "Regular PM oversight check + subagent usage reminder" "$CURRENT_WINDOW"
 
 # For scheduling other agents, specify their windows explicitly
 ./schedule_with_note.sh 30 "Developer progress check" "ai-chat:2"
+
+# Schedule periodic subagent encouragement
+./schedule_with_note.sh 45 "Check if agents need subagent assistance" "$CURRENT_WINDOW"
 ```
+
+### Subagent Usage Monitoring Protocol
+
+**As Orchestrator, you MUST periodically (every 30-45 minutes):**
+
+1. **Check Agent Workload**
+   ```bash
+   # Capture agent activity
+   tmux capture-pane -t session:window -p | tail -50
+   
+   # Look for signs of overwhelm:
+   # - Multiple tasks mentioned
+   # - Long-running operations
+   # - Expressions of complexity
+   ```
+
+2. **Send Subagent Reminders**
+   ```bash
+   # Use the suggest_subagent.sh script
+   ./suggest_subagent.sh project:0 pm "multiple tasks detected"
+   ./suggest_subagent.sh backend:0 developer "complex debugging"
+   ```
+
+3. **Track Subagent Usage**
+   - Monitor when agents use the Task tool
+   - Note which subagent types are most effective
+   - Share success stories with other agents
+
+4. **Proactive Suggestions**
+   When you see:
+   - PM handling implementation details → Suggest developer subagent
+   - Developer stuck on bug for >20 min → Suggest debugger subagent
+   - Anyone doing research → Suggest research-analyst subagent
+   - Complex feature work → Suggest multiple specialized subagents
 
 ## Anti-Patterns to Avoid
 
